@@ -1,0 +1,222 @@
+{
+  "schema": "doubleblind-ledger/1",
+  "note": "Real defects that shipped, or reached a publishable artifact, in one researcher's public repositories. Each records which layer missed it and why that layer could not have seen it. Counts quoted elsewhere are computed from this file by ledger/summarize.py.",
+  "context": {
+    "fresh_eyes_run_1": {
+      "_note": "The first zero-context cross-model audit, on a benchmark-reproduction README whose author had already corrected it twice.",
+      "guard_checks_before": 37,
+      "guard_checks_after": 50,
+      "findings_returned": 9,
+      "findings_verified": 5,
+      "reviewer_minutes": 10,
+      "items_in_subset": 100,
+      "items_with_unclosed_reasoning": 11,
+      "unclosed_items_wrongly_credited": 5,
+      "estimators_reported": 4,
+      "estimator_intervals_that_stop_containing_the_card": 3,
+      "falsified_claims_the_old_guard_passed": 8
+    },
+    "spelled_out_bound": {
+      "_note": "The interval that 'two thirds to four fifths' was written in place of, in percent.",
+      "interval_low": 64.43,
+      "interval_high": 81.17
+    }
+  },
+  "findings": [
+    {
+      "id": "coco-count-causal",
+      "source": "fresh-eyes-run-1",
+      "artifact": "benchmark reproduction README",
+      "category": "correct-number-false-sentence",
+      "shipped": "\"counting is where thinking pays ... COCO Count to 91.3%\". On the subsample thinking moved COCO Count by zero: 91.30% before, 91.30% after, one item fixed and one broken. The gain came from a different task.",
+      "missed_by": "mechanical",
+      "why_invisible": "91.3 is the correct number. The guard compares the quoted figure with the computed one and they agree; the causal sentence around it is what is false, and no quantity comparison reads sentences.",
+      "caught_by": "zero-context reviewer",
+      "check_now": "none possible of the same kind - this class is why the reviewer layer exists",
+      "conclusion_changed": false
+    },
+    {
+      "id": "four-estimators",
+      "source": "fresh-eyes-run-1",
+      "artifact": "benchmark reproduction README",
+      "category": "correct-number-false-sentence",
+      "shipped": "A table of \"four estimators\". Under a binary auxiliary variable the regression and post-stratified estimators are the same estimator - identical point estimates and identical bootstrap intervals. Four rows, three readings.",
+      "missed_by": "mechanical",
+      "why_invisible": "The guard checked both rows against the results file. The results file is right; the framing is not.",
+      "caught_by": "zero-context reviewer",
+      "check_now": "none possible of the same kind",
+      "conclusion_changed": false
+    },
+    {
+      "id": "furthest-from-card",
+      "source": "fresh-eyes-run-1",
+      "artifact": "benchmark reproduction README",
+      "category": "correct-number-false-sentence",
+      "shipped": "\"the least precise of the four and the furthest from the card\". True for one benchmark; for the other that row is the closest - 1.63 against 2.16 and 2.51.",
+      "missed_by": "mechanical",
+      "why_invisible": "The sentence is prose about a table. The guard reads cells.",
+      "caught_by": "zero-context reviewer",
+      "check_now": "none possible of the same kind",
+      "conclusion_changed": false
+    },
+    {
+      "id": "guard-own-promise",
+      "source": "fresh-eyes-run-1",
+      "artifact": "the number guard itself",
+      "category": "correct-number-false-sentence",
+      "shipped": "A 37-check guard printed \"every number on the page is re-derived from results/\" and exited 0 on a README with eight claims falsified into it, among them a McNemar p of 0.064 written as 0.640 and a paired gain of +6.00 written as +60.0. Those figures existed in no committed file, so nothing compared them to anything.",
+      "missed_by": "mechanical",
+      "why_invisible": "The guard searched the whole document for each computed number. A falsified figure that appears nowhere in the data was simply never looked for.",
+      "caught_by": "zero-context reviewer",
+      "check_now": "checks anchored to the sentence that carries the claim, not to the document; 37 checks became 50, and the two falsifications above now fail by name",
+      "conclusion_changed": false
+    },
+    {
+      "id": "unclosed-reasoning-blocks",
+      "source": "fresh-eyes-run-1",
+      "artifact": "benchmark reproduction README",
+      "category": "unexamined-data-column",
+      "shipped": "11 of 100 thinking-on items never closed their reasoning block, all against the token budget. The answer extractor credited 5 of them from a half-written trace. Scored as no-answer instead, three of the four estimator intervals stop containing the model card's number - the verdict turns on how those 11 are counted, and the page did not say so.",
+      "missed_by": "both",
+      "why_invisible": "No check read the column recording whether the block closed. The guard compared stated numbers with computed ones and both were computed the same way, from the same silently truncated traces.",
+      "caught_by": "zero-context reviewer",
+      "check_now": "the unclosed count is a first-class reported result and the sensitivity of the verdict to it is written to a results file",
+      "conclusion_changed": true
+    },
+    {
+      "id": "spelled-out-bound",
+      "artifact": "manuscript prose",
+      "category": "correct-number-false-sentence",
+      "shipped": "\"two thirds to four fifths\" where the interval was 64.43% to 81.17% - a bound stated tighter than the data supports, in prose containing no digits at all.",
+      "missed_by": "mechanical",
+      "why_invisible": "The number guard reads digits. There were none.",
+      "caught_by": "zero-context reviewer",
+      "check_now": "doubleblind trace reports spelled-out quantities as UNCHECKABLE rather than passing over them",
+      "conclusion_changed": false
+    },
+    {
+      "id": "buried-labels",
+      "artifact": "social preview card",
+      "category": "rendering",
+      "shipped": "Two labels overlapping by 8 px, rendering as one run-together word.",
+      "missed_by": "mechanical",
+      "why_invisible": "The collision test divided the intersection by the area of the smaller box; two long labels touching at their ends scored 6.5% and passed.",
+      "caught_by": "human eye",
+      "check_now": "a pair is also reported when the horizontal overlap buries half a character of the narrower font, and negative gaps are included",
+      "conclusion_changed": false
+    },
+    {
+      "id": "title-across-artwork",
+      "artifact": "social preview card",
+      "category": "rendering",
+      "shipped": "A headline lying across a 128-tile grid, twice.",
+      "missed_by": "mechanical",
+      "why_invisible": "The text-on-artwork test keyed on filled patches above a 12% area threshold. A field of small tiles never reached it.",
+      "caught_by": "human eye",
+      "check_now": "any text over undeclared artwork larger than 2 px is reported; chrome must be declared explicitly",
+      "conclusion_changed": false
+    },
+    {
+      "id": "text-across-rule",
+      "artifact": "social preview card",
+      "category": "rendering",
+      "shipped": "Chart headers sitting on the card's own separator rule.",
+      "missed_by": "mechanical",
+      "why_invisible": "The artwork test walked patches. A rule is a Line2D and was never in the list.",
+      "caught_by": "human eye",
+      "check_now": "rules are checked as artwork",
+      "conclusion_changed": false
+    },
+    {
+      "id": "missing-glyph-tofu",
+      "artifact": "figure",
+      "category": "rendering",
+      "shipped": "A subscript rendered as two empty boxes because the font could not draw it.",
+      "missed_by": "mechanical",
+      "why_invisible": "A missing glyph has a bounding box like any other glyph, so every geometric check passed. The renderer mentions it once, in a warning, in a long build log.",
+      "caught_by": "human eye",
+      "check_now": "renderer warnings are captured and missing characters are reported by name",
+      "conclusion_changed": false
+    },
+    {
+      "id": "inverted-figure",
+      "artifact": "figure",
+      "category": "rendering",
+      "shipped": "Per-family points joined by line segments made the shallower fit look steeper, reversing the figure's visual conclusion while every number in it was correct.",
+      "missed_by": "both",
+      "why_invisible": "Nothing about the plot was wrong as data. A geometric check has no notion of which slope a reader will perceive, and a reviewer given the numbers rather than the image would not see it either.",
+      "caught_by": "human eye",
+      "check_now": "fitted lines are drawn over a common range; the rendered image is read, not the script",
+      "conclusion_changed": true
+    },
+    {
+      "id": "stale-artifact",
+      "artifact": "compiled PDF",
+      "category": "staleness",
+      "shipped": "A built PDF quoting figures that the data behind it had since replaced.",
+      "missed_by": "mechanical",
+      "why_invisible": "Every check ran against the source. Nothing compared the built artifact with the source it was built from.",
+      "caught_by": "human eye",
+      "check_now": "the built artifact's numbers are re-extracted and matched against the current results, anchored so a figure cannot match inside a longer one",
+      "conclusion_changed": false
+    },
+    {
+      "id": "unread-prose-state",
+      "artifact": "profile page",
+      "category": "staleness",
+      "shipped": "A page describing an upstream pull request as open after it had been closed.",
+      "missed_by": "mechanical",
+      "why_invisible": "The guard checked that the links resolved. It never read the words next to them.",
+      "caught_by": "human eye",
+      "check_now": "the status written in prose after each link is parsed and compared with the live state",
+      "conclusion_changed": false
+    },
+    {
+      "id": "vendored-drift",
+      "artifact": "shared tooling",
+      "category": "tooling",
+      "shipped": "Copies of a shared checking tool vendored into several repositories had drifted from the source, so a fix in one place was not a fix anywhere else.",
+      "missed_by": "mechanical",
+      "why_invisible": "Each copy passed its own tests. Nothing compared the copies.",
+      "caught_by": "human eye",
+      "check_now": "a sync step copies the source into every consumer and names what changed",
+      "conclusion_changed": false
+    },
+    {
+      "id": "hidden-relative-path",
+      "source": "doubleblind-itself",
+      "artifact": "this repository",
+      "category": "tooling",
+      "shipped": "The evidence loader skipped every directory whose path contained a component starting with a dot, in order to ignore hidden directories. It therefore silently found nothing under any relative path beginning with `..` and reported \"nothing to trace against\".",
+      "missed_by": "both",
+      "why_invisible": "Unit tests used absolute paths. The failure mode was an empty result, which looks like a clean run if you are not watching for it.",
+      "caught_by": "running it on a real repository",
+      "check_now": "\".\" and \"..\" are ordinary path components; a test covers the relative-path case",
+      "conclusion_changed": false
+    },
+    {
+      "id": "integer-rounding",
+      "source": "doubleblind-itself",
+      "artifact": "this repository",
+      "category": "tooling",
+      "shipped": "The matcher allowed rounding at the precision the prose chose, so \"11 items\" was reported as traced by a stored 10.6.",
+      "missed_by": "mechanical",
+      "why_invisible": "The rule was correct for means and wrong for counts, and nothing distinguished them. It was found only because a test was written to assert the behaviour nobody had checked.",
+      "caught_by": "test",
+      "check_now": "a whole number in prose requires a whole number in the evidence",
+      "conclusion_changed": false
+    },
+    {
+      "id": "repo-wide-allow-list",
+      "source": "doubleblind-itself",
+      "artifact": "this repository",
+      "category": "tooling",
+      "shipped": "The allow list was a flat list of numbers with reasons, read from the repository root for whatever document was being traced. The entry exempting an illustrative 97.50 in the README therefore also exempted the figure deliberately fabricated into the broken example, and the CI step asserting that the broken example fails began to pass.",
+      "missed_by": "mechanical",
+      "why_invisible": "Nothing was wrong with either file. The exemption was correct for the document it was written for and silently correct for every other document too, and a check that stops failing looks exactly like a check that has nothing to report.",
+      "caught_by": "test",
+      "check_now": "every allow entry names the document it applies to, and a test asserts that an exemption for one document does not cover another",
+      "conclusion_changed": false
+    }
+  ]
+}

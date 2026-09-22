@@ -1,0 +1,16 @@
+# Numbers in these documents that no results file supports, and why.
+#
+# Format:  <document glob>  <number>  <reason>
+#
+# The document comes first on purpose. A list of bare numbers exempts them
+# everywhere, so one document's illustration silently covers another document's
+# defect - which is exactly what happened here, and why this column exists.
+# A reason is mandatory: an allow list without reasons is where inconvenient
+# numbers go to stop being checked.
+
+README.md   3.9       the minimum Python version, not a measurement
+README.md   97.50     the figure fabricated into examples/broken/report.md; by design it is in no file
+README.md   79.75     an illustration of anchored matching, not a result
+README.md   179.751   the number 79.75 must not match inside this one; an illustration
+README.md   88.4      an illustration of precision-dependent tolerance, not a result
+README.md   10.6      an illustration of why a whole number is not a rounding; not a result

@@ -1,0 +1,57 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Tests
+        run: python -m unittest discover -s tests -v
+
+      # The repository is checked by the thing it ships. Every number in the
+      # README has to exist in the ledger it describes, or in the example data.
+      - name: Trace the README against the ledger
+        run: |
+          python -m doubleblind trace README.md \
+            --data ledger/findings.json examples/results.json \
+            --derive 'python3 ledger/summarize.py' \
+            --derive 'python3 examples/gain.py' \
+            --no-color
+
+      # The clean example must pass and the broken one must fail. A guard that
+      # has never been seen failing is not a guard.
+      - name: The clean example traces
+        run: |
+          python -m doubleblind trace examples/report.md \
+            --data examples/results.json --derive 'python3 examples/gain.py' --no-color
+
+      - name: The broken example does not
+        run: |
+          if python -m doubleblind trace examples/broken/report.md \
+               --data examples/results.json --derive 'python3 examples/gain.py' --no-color
+          then
+            echo "::error::the broken example passed - the check has stopped working"
+            exit 1
+          fi
+
+      - name: The shipped brief is clean and the leaky one is not
+        run: |
+          python -m doubleblind lint examples/brief-clean.md --no-color
+          if python -m doubleblind lint examples/brief-leaky.md --no-color; then
+            echo "::error::the leaky brief passed the linter"
+            exit 1
+          fi
+
+      - name: The rendered ledger matches its data
+        run: python3 ledger/render.py --check

@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If this was useful in your work, please cite it."
+title: "doubleblind: two verification layers that are blind to different defects"
+abstract: "An agent cannot check its own output: the reasoning that produced a claim is the reasoning being asked to verify it. Two independent layers catch different things and neither catches the other's. A machine that recomputes finds numbers that exist in no file, stale artifacts and bounds stated tighter than the data, but is structurally unable to see a correct number inside a sentence that does not follow from it. A reader given the artifact and no context finds exactly those, but cannot see a fabricated number that looks plausible. This repository ships both, a linter for the intent leakage that destroys the reviewer's independence, and a ledger of real defects recording which layer missed each one and why."
+type: software
+authors:
+  - family-names: Cheng
+    given-names: Guo
+    orcid: "https://orcid.org/0009-0006-7813-0114"
+repository-code: "https://github.com/GuoCheng24/doubleblind"
+license: MIT
+version: 0.1.0
+date-released: 2026-09-23
+keywords:
+  - verification
+  - reproducibility
+  - AI agents
+  - peer review
+  - research software

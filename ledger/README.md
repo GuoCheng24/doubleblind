@@ -1,0 +1,211 @@
+# The ledger
+
+Real defects that shipped, or reached a publishable artifact, in one
+researcher's public repositories. Each entry records **which layer missed it and
+why that layer could not have seen it** - not to apportion blame, but because
+the pattern is the only thing here that generalises.
+
+This file is generated from `findings.json` by `render.py`. Edit the data.
+
+
+## correct number false sentence  (5)
+
+### `coco-count-causal`
+
+*benchmark reproduction README*
+
+"counting is where thinking pays ... COCO Count to 91.3%". On the subsample thinking moved COCO Count by zero: 91.30% before, 91.30% after, one item fixed and one broken. The gain came from a different task.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** 91.3 is the correct number. The guard compares the quoted figure with the computed one and they agree; the causal sentence around it is what is false, and no quantity comparison reads sentences.
+- **Caught by:** zero-context reviewer
+- **Check now:** none possible of the same kind - this class is why the reviewer layer exists
+
+### `four-estimators`
+
+*benchmark reproduction README*
+
+A table of "four estimators". Under a binary auxiliary variable the regression and post-stratified estimators are the same estimator - identical point estimates and identical bootstrap intervals. Four rows, three readings.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The guard checked both rows against the results file. The results file is right; the framing is not.
+- **Caught by:** zero-context reviewer
+- **Check now:** none possible of the same kind
+
+### `furthest-from-card`
+
+*benchmark reproduction README*
+
+"the least precise of the four and the furthest from the card". True for one benchmark; for the other that row is the closest - 1.63 against 2.16 and 2.51.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The sentence is prose about a table. The guard reads cells.
+- **Caught by:** zero-context reviewer
+- **Check now:** none possible of the same kind
+
+### `guard-own-promise`
+
+*the number guard itself*
+
+A 37-check guard printed "every number on the page is re-derived from results/" and exited 0 on a README with eight claims falsified into it, among them a McNemar p of 0.064 written as 0.640 and a paired gain of +6.00 written as +60.0. Those figures existed in no committed file, so nothing compared them to anything.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The guard searched the whole document for each computed number. A falsified figure that appears nowhere in the data was simply never looked for.
+- **Caught by:** zero-context reviewer
+- **Check now:** checks anchored to the sentence that carries the claim, not to the document; 37 checks became 50, and the two falsifications above now fail by name
+
+### `spelled-out-bound`
+
+*manuscript prose*
+
+"two thirds to four fifths" where the interval was 64.43% to 81.17% - a bound stated tighter than the data supports, in prose containing no digits at all.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The number guard reads digits. There were none.
+- **Caught by:** zero-context reviewer
+- **Check now:** doubleblind trace reports spelled-out quantities as UNCHECKABLE rather than passing over them
+
+## unexamined data column  (1)
+
+### `unclosed-reasoning-blocks`  **changed a conclusion**
+
+*benchmark reproduction README*
+
+11 of 100 thinking-on items never closed their reasoning block, all against the token budget. The answer extractor credited 5 of them from a half-written trace. Scored as no-answer instead, three of the four estimator intervals stop containing the model card's number - the verdict turns on how those 11 are counted, and the page did not say so.
+
+- **Missed by:** both automated layers
+- **Why it could not see it:** No check read the column recording whether the block closed. The guard compared stated numbers with computed ones and both were computed the same way, from the same silently truncated traces.
+- **Caught by:** zero-context reviewer
+- **Check now:** the unclosed count is a first-class reported result and the sensitivity of the verdict to it is written to a results file
+
+## rendering  (5)
+
+### `buried-labels`
+
+*social preview card*
+
+Two labels overlapping by 8 px, rendering as one run-together word.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The collision test divided the intersection by the area of the smaller box; two long labels touching at their ends scored 6.5% and passed.
+- **Caught by:** human eye
+- **Check now:** a pair is also reported when the horizontal overlap buries half a character of the narrower font, and negative gaps are included
+
+### `title-across-artwork`
+
+*social preview card*
+
+A headline lying across a 128-tile grid, twice.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The text-on-artwork test keyed on filled patches above a 12% area threshold. A field of small tiles never reached it.
+- **Caught by:** human eye
+- **Check now:** any text over undeclared artwork larger than 2 px is reported; chrome must be declared explicitly
+
+### `text-across-rule`
+
+*social preview card*
+
+Chart headers sitting on the card's own separator rule.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The artwork test walked patches. A rule is a Line2D and was never in the list.
+- **Caught by:** human eye
+- **Check now:** rules are checked as artwork
+
+### `missing-glyph-tofu`
+
+*figure*
+
+A subscript rendered as two empty boxes because the font could not draw it.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** A missing glyph has a bounding box like any other glyph, so every geometric check passed. The renderer mentions it once, in a warning, in a long build log.
+- **Caught by:** human eye
+- **Check now:** renderer warnings are captured and missing characters are reported by name
+
+### `inverted-figure`  **changed a conclusion**
+
+*figure*
+
+Per-family points joined by line segments made the shallower fit look steeper, reversing the figure's visual conclusion while every number in it was correct.
+
+- **Missed by:** both automated layers
+- **Why it could not see it:** Nothing about the plot was wrong as data. A geometric check has no notion of which slope a reader will perceive, and a reviewer given the numbers rather than the image would not see it either.
+- **Caught by:** human eye
+- **Check now:** fitted lines are drawn over a common range; the rendered image is read, not the script
+
+## staleness  (2)
+
+### `stale-artifact`
+
+*compiled PDF*
+
+A built PDF quoting figures that the data behind it had since replaced.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** Every check ran against the source. Nothing compared the built artifact with the source it was built from.
+- **Caught by:** human eye
+- **Check now:** the built artifact's numbers are re-extracted and matched against the current results, anchored so a figure cannot match inside a longer one
+
+### `unread-prose-state`
+
+*profile page*
+
+A page describing an upstream pull request as open after it had been closed.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The guard checked that the links resolved. It never read the words next to them.
+- **Caught by:** human eye
+- **Check now:** the status written in prose after each link is parsed and compared with the live state
+
+## tooling  (4)
+
+### `vendored-drift`
+
+*shared tooling*
+
+Copies of a shared checking tool vendored into several repositories had drifted from the source, so a fix in one place was not a fix anywhere else.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** Each copy passed its own tests. Nothing compared the copies.
+- **Caught by:** human eye
+- **Check now:** a sync step copies the source into every consumer and names what changed
+
+### `hidden-relative-path`
+
+*this repository*
+
+The evidence loader skipped every directory whose path contained a component starting with a dot, in order to ignore hidden directories. It therefore silently found nothing under any relative path beginning with `..` and reported "nothing to trace against".
+
+- **Missed by:** both automated layers
+- **Why it could not see it:** Unit tests used absolute paths. The failure mode was an empty result, which looks like a clean run if you are not watching for it.
+- **Caught by:** running it on a real repository
+- **Check now:** "." and ".." are ordinary path components; a test covers the relative-path case
+
+### `integer-rounding`
+
+*this repository*
+
+The matcher allowed rounding at the precision the prose chose, so "11 items" was reported as traced by a stored 10.6.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The rule was correct for means and wrong for counts, and nothing distinguished them. It was found only because a test was written to assert the behaviour nobody had checked.
+- **Caught by:** test
+- **Check now:** a whole number in prose requires a whole number in the evidence
+
+### `repo-wide-allow-list`
+
+*this repository*
+
+The allow list was a flat list of numbers with reasons, read from the repository root for whatever document was being traced. The entry exempting an illustrative 97.50 in the README therefore also exempted the figure deliberately fabricated into the broken example, and the CI step asserting that the broken example fails began to pass.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** Nothing was wrong with either file. The exemption was correct for the document it was written for and silently correct for every other document too, and a check that stops failing looks exactly like a check that has nothing to report.
+- **Caught by:** test
+- **Check now:** every allow entry names the document it applies to, and a test asserts that an exemption for one document does not cover another
+
+---
+
+Counts over this file are printed by `summarize.py`, which is what the
+top-level README is traced against.

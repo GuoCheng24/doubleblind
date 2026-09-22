@@ -1,0 +1,18 @@
+{
+  "dataset": "widgets-v2",
+  "n_items": 400,
+  "baseline": {"accuracy": 0.8125, "n_correct": 325},
+  "treatment": {"accuracy": 0.8750, "n_correct": 350},
+  "per_category_accuracy": {
+    "colour": 0.9100,
+    "shape": 0.7400,
+    "count": 0.8900
+  },
+  "per_category_accuracy_baseline": {
+    "colour": 0.8600,
+    "shape": 0.7400,
+    "count": 0.8100
+  },
+  "mcnemar_exact_p": 0.0412,
+  "removed_fraction_ci": [0.6443, 0.8117]
+}
