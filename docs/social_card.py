@@ -23,14 +23,27 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 with open(ROOT / "ledger" / "findings.json", encoding="utf-8") as fh:
     FINDINGS = json.load(fh)["findings"]
 
+# Short labels for the card. Two different kinds of first real use - running it
+# on a real repository, and installing it into a clean virtualenv and following
+# the README from elsewhere - are one bar, because on a card they are one idea.
 LABEL = {
     "human eye": "your own eyes",
     "zero-context reviewer": "a different model",
     "test": "a test",
-    "running it on a real repository": "the first real run",
+    "running it on a real repository": "first real use",
+    "installing it into a clean virtualenv and following the README from elsewhere":
+        "first real use",
 }
 COUNTS = collections.Counter(f["caught_by"] for f in FINDINGS)
-ROWS = sorted(((LABEL[k], n) for k, n in COUNTS.items()), key=lambda r: -r[1])
+missing = sorted(set(COUNTS) - set(LABEL))
+if missing:
+    # A new catcher must be given a label rather than silently dropped from the
+    # chart, which would leave the card's total disagreeing with the ledger's.
+    raise SystemExit(f"ledger has catchers with no card label: {missing}")
+merged = collections.Counter()
+for k, n in COUNTS.items():
+    merged[LABEL[k]] += n
+ROWS = sorted(merged.items(), key=lambda r: -r[1])
 TOTAL = sum(n for _, n in ROWS)
 
 ACCENT = "#1f6f6b"

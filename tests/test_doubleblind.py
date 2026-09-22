@@ -216,6 +216,36 @@ class Derivations(unittest.TestCase):
         self.assertIn("print(6.25)", vals[0].source)
 
 
+class ShippedExamplesRunFromAnywhere(unittest.TestCase):
+    """The example a reader copies out of the README must not need a cwd.
+
+    Found by installing the package into a clean virtualenv and running the
+    README's own quickstart from an unrelated directory - which is the only way
+    this class of defect shows up, because the repository root is where every
+    test and every author happens to be standing.
+    """
+
+    def test_the_derivation_example_runs_from_another_directory(self):
+        with tempfile.TemporaryDirectory() as elsewhere:
+            proc = subprocess.run([sys.executable, os.path.join(EX, "gain.py")],
+                                  cwd=elsewhere, capture_output=True, text=True)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn("gain_points", proc.stdout)
+
+    def test_tracing_the_example_from_another_directory(self):
+        with tempfile.TemporaryDirectory() as elsewhere:
+            proc = subprocess.run(
+                [sys.executable, "-m", "doubleblind", "trace",
+                 os.path.join(EX, "report.md"),
+                 "--data", os.path.join(EX, "results.json"),
+                 "--derive", f'{sys.executable} {os.path.join(EX, "gain.py")}',
+                 "--no-color"],
+                cwd=elsewhere, capture_output=True, text=True,
+                env={**os.environ, "PYTHONPATH": ROOT})
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            self.assertIn("0 unsupported", proc.stdout)
+
+
 class Packet(unittest.TestCase):
     def test_packet_contains_the_document_and_the_data_and_the_brief(self):
         text = build_packet([os.path.join(EX, "report.md")],

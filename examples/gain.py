@@ -7,8 +7,14 @@ this line and get the same numbers, which an entry in an allow list would not
 give them.
 """
 import json
+import os
 
-with open("examples/results.json") as fh:
+# Resolved against this file, not the working directory. A derivation is a
+# command a reader copies out of the README and runs from wherever they happen
+# to be; one that only works from the repository root is a trap, and the error
+# it produces names the wrong thing.
+HERE = os.path.dirname(os.path.abspath(__file__))
+with open(os.path.join(HERE, "results.json")) as fh:
     r = json.load(fh)
 gain = (r["treatment"]["accuracy"] - r["baseline"]["accuracy"]) * 100
 print(f"gain_points {gain:.2f}")

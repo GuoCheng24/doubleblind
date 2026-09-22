@@ -229,6 +229,18 @@
       "caught_by": "human eye",
       "check_now": "the bars start at a measured offset past the widest rendered label instead of a hand-picked coordinate, so the gap cannot depend on how long the labels happen to be",
       "conclusion_changed": false
+    },
+    {
+      "id": "example-needs-a-working-directory",
+      "source": "doubleblind-itself",
+      "artifact": "this repository's quickstart",
+      "category": "tooling",
+      "shipped": "The derivation script the README tells readers to run opened its data file by a path relative to the working directory. Copied out of the README and run from anywhere but the repository root, it failed with a FileNotFoundError naming a file the reader had never heard of.",
+      "missed_by": "both",
+      "why_invisible": "Every test and every author stands in the repository root, so the path always resolved. Nothing was wrong with the code as exercised; it was wrong only as used.",
+      "caught_by": "installing it into a clean virtualenv and following the README from elsewhere",
+      "check_now": "the example resolves its data against __file__, and two tests run it from a temporary directory",
+      "conclusion_changed": false
     }
   ]
 }

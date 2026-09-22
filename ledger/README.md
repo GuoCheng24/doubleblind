@@ -170,7 +170,7 @@ A page describing an upstream pull request as open after it had been closed.
 - **Caught by:** human eye
 - **Check now:** the status written in prose after each link is parsed and compared with the live state
 
-## tooling  (4)
+## tooling  (5)
 
 ### `vendored-drift`
 
@@ -215,6 +215,17 @@ The allow list was a flat list of numbers with reasons, read from the repository
 - **Why it could not see it:** Nothing was wrong with either file. The exemption was correct for the document it was written for and silently correct for every other document too, and a check that stops failing looks exactly like a check that has nothing to report.
 - **Caught by:** test
 - **Check now:** every allow entry names the document it applies to, and a test asserts that an exemption for one document does not cover another
+
+### `example-needs-a-working-directory`
+
+*this repository's quickstart*
+
+The derivation script the README tells readers to run opened its data file by a path relative to the working directory. Copied out of the README and run from anywhere but the repository root, it failed with a FileNotFoundError naming a file the reader had never heard of.
+
+- **Missed by:** both automated layers
+- **Why it could not see it:** Every test and every author stands in the repository root, so the path always resolved. Nothing was wrong with the code as exercised; it was wrong only as used.
+- **Caught by:** installing it into a clean virtualenv and following the README from elsewhere
+- **Check now:** the example resolves its data against __file__, and two tests run it from a temporary directory
 
 ---
 

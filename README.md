@@ -166,9 +166,11 @@ them and be called traced. `trace` says so when the pool gets large. Point
 
 [`ledger/`](ledger/) records real defects that shipped, each with the layer that
 missed it and why that layer could not have seen it. It is the part of this
-repository that cannot be regenerated, and it includes 4 defects in
+repository that cannot be regenerated, and it includes 5 defects in
 `doubleblind` itself - one of which disarmed a CI step for every document in
-the repository at once.
+the repository at once, and one of which only appeared when the package was
+installed into a clean virtualenv and the README's own quickstart was followed
+from somewhere else.
 
 The pattern is consistent enough to plan around. On a document that had already
 passed 37 mechanical checks and two rounds of its author's own review, a
@@ -184,7 +186,7 @@ had credited 5 of them from a half-written trace. Counted as no-answer instead,
 three of four confidence intervals stopped containing the number being
 reproduced. The page's verdict turned on it and the page did not mention it.
 
-And the honest part: of 18 recorded defects, **9 were caught by a person
+And the honest part: of 19 recorded defects, **9 were caught by a person
 looking at the rendered artifact** — 6 of those 9 rendering defects that no
 amount of number-checking would ever have reached. The most recent is this
 repository's own social card, which passed its own legibility, contrast and
