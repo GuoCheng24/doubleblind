@@ -217,6 +217,18 @@
       "caught_by": "test",
       "check_now": "every allow entry names the document it applies to, and a test asserts that an exemption for one document does not cover another",
       "conclusion_changed": false
+    },
+    {
+      "id": "card-label-touching-bar",
+      "source": "doubleblind-itself",
+      "artifact": "this repository's own social card",
+      "category": "rendering",
+      "shipped": "The longest bar label ended three pixels from the bar it labelled, so at a glance the words ran into the shape. The card's own acceptance test - legibility at unfurl scale, WCAG contrast, frame, text-against-text collision, missing glyphs - reported it clean and wrote the file.",
+      "missed_by": "mechanical",
+      "why_invisible": "The gap was between text and a filled rectangle rather than between two pieces of text, and it was positive. Every threshold in the audit was written for overlap, and three pixels of clearance is not overlap.",
+      "caught_by": "human eye",
+      "check_now": "the bars start at a measured offset past the widest rendered label instead of a hand-picked coordinate, so the gap cannot depend on how long the labels happen to be",
+      "conclusion_changed": false
     }
   ]
 }

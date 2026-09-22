@@ -78,7 +78,7 @@ A 37-check guard printed "every number on the page is re-derived from results/" 
 - **Caught by:** zero-context reviewer
 - **Check now:** the unclosed count is a first-class reported result and the sensitivity of the verdict to it is written to a results file
 
-## rendering  (5)
+## rendering  (6)
 
 ### `buried-labels`
 
@@ -134,6 +134,17 @@ Per-family points joined by line segments made the shallower fit look steeper, r
 - **Why it could not see it:** Nothing about the plot was wrong as data. A geometric check has no notion of which slope a reader will perceive, and a reviewer given the numbers rather than the image would not see it either.
 - **Caught by:** human eye
 - **Check now:** fitted lines are drawn over a common range; the rendered image is read, not the script
+
+### `card-label-touching-bar`
+
+*this repository's own social card*
+
+The longest bar label ended three pixels from the bar it labelled, so at a glance the words ran into the shape. The card's own acceptance test - legibility at unfurl scale, WCAG contrast, frame, text-against-text collision, missing glyphs - reported it clean and wrote the file.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The gap was between text and a filled rectangle rather than between two pieces of text, and it was positive. Every threshold in the audit was written for overlap, and three pixels of clearance is not overlap.
+- **Caught by:** human eye
+- **Check now:** the bars start at a measured offset past the widest rendered label instead of a hand-picked coordinate, so the gap cannot depend on how long the labels happen to be
 
 ## staleness  (2)
 
