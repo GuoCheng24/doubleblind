@@ -22,6 +22,11 @@ classifiers = [
 ]
 dependencies = []
 
+[project.optional-dependencies]
+# The two core layers are standard library only. The figure layer needs a
+# renderer, and that is the only reason to install anything.
+render = ["matplotlib>=3.5"]
+
 [project.urls]
 Homepage = "https://github.com/GuoCheng24/doubleblind"
 Ledger = "https://github.com/GuoCheng24/doubleblind/tree/main/ledger"

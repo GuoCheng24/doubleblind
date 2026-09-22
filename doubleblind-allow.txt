@@ -14,3 +14,6 @@ README.md   79.75     an illustration of anchored matching, not a result
 README.md   179.751   the number 79.75 must not match inside this one; an illustration
 README.md   88.4      an illustration of precision-dependent tolerance, not a result
 README.md   10.6      an illustration of why a whole number is not a rounding; not a result
+
+README.md   2.1       the WCAG specification version, not a measurement
+README.md   12        the area threshold an earlier artwork check used and that passed a defect twice

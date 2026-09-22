@@ -170,7 +170,7 @@ A page describing an upstream pull request as open after it had been closed.
 - **Caught by:** human eye
 - **Check now:** the status written in prose after each link is parsed and compared with the live state
 
-## tooling  (5)
+## tooling  (6)
 
 ### `vendored-drift`
 
@@ -226,6 +226,17 @@ The derivation script the README tells readers to run opened its data file by a 
 - **Why it could not see it:** Every test and every author stands in the repository root, so the path always resolved. Nothing was wrong with the code as exercised; it was wrong only as used.
 - **Caught by:** installing it into a clean virtualenv and following the README from elsewhere
 - **Check now:** the example resolves its data against __file__, and two tests run it from a temporary directory
+
+### `hidden-axis-still-had-labels`
+
+*this repository's figure auditor*
+
+Run on its first real figure, the auditor produced twenty complaints about tick labels belonging to an axis that had been turned off with ax.axis("off"), burying the six real findings underneath them. It also reported every out-of-canvas problem as an x-axis span whichever edge had actually been crossed, so a label hanging four pixels below its baseline read as a horizontal overflow.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** Three different flags could have said the axis was hidden and only one of them moves: the label's own get_visible() stays True, ax.xaxis.get_visible() stays True, and ax.axison is the one that goes False. Checking the two obvious ones looked like checking visibility.
+- **Caught by:** running it on a real figure
+- **Check now:** tick labels are gated on ax.axison, a test asserts a hidden axis contributes no text at all, and the frame check names the edge that was crossed and by how much, with a tolerance scaled to the font's own descent
 
 ---
 

@@ -228,6 +228,33 @@ def cmd_review(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_render(args: argparse.Namespace) -> int:
+    """Run a figure script and audit what it leaves in `fig`."""
+    import runpy
+
+    from . import render as _render
+
+    ns = runpy.run_path(args.script)
+    fig = ns.get("fig")
+    if fig is None:
+        for v in ns.values():
+            if type(v).__name__ == "Figure":
+                fig = v
+                break
+    if fig is None:
+        print(f"{args.script} leaves no Figure at module level.\n"
+              "  Assign the figure to `fig` so it can be audited after the script runs.",
+              file=sys.stderr)
+        return 2
+    problems = _render.audit(fig, scale=args.scale, min_ratio=args.min_ratio)
+    if not problems:
+        print()
+        print("Nothing in this figure is geometrically wrong at that scale. That is")
+        print("all this says: whether the shape a reader takes from it is the shape")
+        print("the data supports is not a thing any of these rules can see.")
+    return 1 if problems else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         prog="doubleblind",
@@ -264,6 +291,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("-o", "--output", default="packet.md")
     p.set_defaults(func=cmd_packet)
 
+    g = add("render", "audit a figure for what a reader sees and a number-checker cannot")
+    g.add_argument("script", help="a python script that leaves its figure in `fig`")
+    g.add_argument("--scale", type=float, default=0.30,
+                   help="fraction of drawn size the figure will be seen at "
+                        "(0.30 = a link unfurl, 1.0 = read at full size)")
+    g.add_argument("--min-ratio", type=float, default=4.5,
+                   help="WCAG contrast required of body text")
+    g.set_defaults(func=cmd_render)
+
     r = add("review", "build the packet and print how to send it")
     r.add_argument("document", nargs="+")
     r.add_argument("--data", nargs="*", default=[])
@@ -272,7 +308,8 @@ def main(argv: list[str] | None = None) -> int:
     r.set_defaults(func=cmd_review)
 
     args = ap.parse_args(argv)
-    for attr in ("no_color", "strict", "no_vague", "verbose", "allow", "derive"):
+    for attr in ("no_color", "strict", "no_vague", "verbose", "allow", "derive",
+                 "scale", "min_ratio"):
         if not hasattr(args, attr):
             setattr(args, attr, False if attr not in ("allow", "derive") else None)
     return args.func(args)

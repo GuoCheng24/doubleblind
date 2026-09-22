@@ -16,6 +16,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      # The figure layer is an optional extra, and installing it here is the
+      # point: if CI skipped those tests the one layer that exists to shrink the
+      # biggest bar on this repository's own chart would be the one nobody runs.
+      - name: Install with the figure extra
+        run: python -m pip install -e '.[render]'
+
       - name: Tests
         run: python -m unittest discover -s tests -v
 
@@ -27,6 +33,7 @@ jobs:
             --data ledger/findings.json examples/results.json \
             --derive 'python3 ledger/summarize.py' \
             --derive 'python3 examples/gain.py' \
+            --derive 'python3 examples/figure_facts.py' \
             --no-color
 
       # The clean example must pass and the broken one must fail. A guard that
@@ -52,6 +59,19 @@ jobs:
             echo "::error::the leaky brief passed the linter"
             exit 1
           fi
+
+      - name: The clean figure passes and the broken one does not
+        run: |
+          python -m doubleblind render examples/figure_ok.py --no-color
+          if python -m doubleblind render examples/broken/figure.py --no-color; then
+            echo "::error::the broken figure passed the render audit"
+            exit 1
+          fi
+
+      # Asserting a blind spot: this figure has correct numbers, clean geometry
+      # and a conclusion that is backwards, and the layer must keep passing it.
+      - name: The figure that reads backwards still passes
+        run: python -m doubleblind render examples/broken/figure_reads_backwards.py --no-color
 
       - name: The rendered ledger matches its data
         run: python3 ledger/render.py --check

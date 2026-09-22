@@ -139,6 +139,81 @@ class Examples(unittest.TestCase):
                          "the example only works while shape genuinely does not move")
 
 
+class Render(unittest.TestCase):
+    """The third layer, and the third blind spot.
+
+    matplotlib is an optional extra, so these skip rather than fail when it is
+    not installed - but they must run in CI, or the layer that exists to shrink
+    the biggest bar on this repository's own chart is the one layer nobody
+    checks.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import matplotlib  # noqa: F401
+        except ImportError:                                  # pragma: no cover
+            raise unittest.SkipTest("matplotlib not installed")
+
+    @staticmethod
+    def _audit(path):
+        import runpy
+        from doubleblind.render import audit
+        ns = runpy.run_path(os.path.join(EX, path))
+        return audit(ns["fig"], verbose=False)
+
+    def test_the_clean_figure_has_nothing_wrong_with_it(self):
+        self.assertEqual(self._audit("figure_ok.py"), [])
+
+    def test_every_planted_defect_is_reported(self):
+        found = " | ".join(self._audit("broken/figure.py"))
+        for phrase in ("undeclared artwork", "across a rule", "unreadable",
+                       "contrast", "read as one word", "cannot draw"):
+            self.assertIn(phrase, found, f"{phrase!r} not reported:\n{found}")
+
+    def test_a_hidden_axis_contributes_no_tick_labels(self):
+        """`axis("off")` leaves the labels in get_xticklabels(), each reporting visible."""
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        from doubleblind.render import _texts
+        fig = plt.figure(figsize=(4, 3), dpi=100)
+        ax = fig.add_axes([0, 0, 1, 1])
+        ax.plot([0, 1], [0, 1])
+        with_axis = len(_texts(fig))
+        ax.axis("off")
+        without = len(_texts(fig))
+        plt.close(fig)
+        self.assertGreater(with_axis, 0)
+        self.assertEqual(without, 0, "a hidden axis still contributed text")
+
+    def test_contrast_matches_wcag(self):
+        from doubleblind.render import contrast
+        self.assertAlmostEqual(contrast("#000000", "#ffffff"), 21.0, places=2)
+        self.assertAlmostEqual(contrast("#ffffff", "#ffffff"), 1.0, places=6)
+
+    def test_a_figure_whose_conclusion_is_backwards_passes(self):
+        """The third blind spot, pinned down the way the other two are.
+
+        Every number in examples/broken/figure_reads_backwards.py is correct and
+        nothing in it is geometrically wrong, so this layer passes it. What a
+        reader takes from it is a steep positive relationship; over the range
+        measured the pooled slope is 0.30 while the within-family segments the
+        eye follows have slope 30. No rule about geometry knows which slope a
+        reader will perceive.
+        """
+        self.assertEqual(self._audit("broken/figure_reads_backwards.py"), [])
+        xs = [1.0, 1.1, 1.2, 5.0, 5.1, 5.2]
+        ys = [2.0, 5.0, 8.0, 3.0, 6.0, 9.0]
+        n = len(xs)
+        mx, my = sum(xs) / n, sum(ys) / n
+        pooled = (sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+                  / sum((x - mx) ** 2 for x in xs))
+        within = (ys[2] - ys[0]) / (xs[2] - xs[0])
+        self.assertAlmostEqual(pooled, 0.30, places=2)
+        self.assertAlmostEqual(within, 30.0, places=2)
+
+
 class Leaks(unittest.TestCase):
     LEAKY = ("Hi! I wrote this README and I already verified the numbers.\n"
              "Please confirm that all four estimators fall below the card number.\n"

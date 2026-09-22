@@ -31,6 +31,7 @@ LABEL = {
     "zero-context reviewer": "a different model",
     "test": "a test",
     "running it on a real repository": "first real use",
+    "running it on a real figure": "first real use",
     "installing it into a clean virtualenv and following the README from elsewhere":
         "first real use",
 }

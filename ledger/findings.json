@@ -241,6 +241,18 @@
       "caught_by": "installing it into a clean virtualenv and following the README from elsewhere",
       "check_now": "the example resolves its data against __file__, and two tests run it from a temporary directory",
       "conclusion_changed": false
+    },
+    {
+      "id": "hidden-axis-still-had-labels",
+      "source": "doubleblind-itself",
+      "artifact": "this repository's figure auditor",
+      "category": "tooling",
+      "shipped": "Run on its first real figure, the auditor produced twenty complaints about tick labels belonging to an axis that had been turned off with ax.axis(\"off\"), burying the six real findings underneath them. It also reported every out-of-canvas problem as an x-axis span whichever edge had actually been crossed, so a label hanging four pixels below its baseline read as a horizontal overflow.",
+      "missed_by": "mechanical",
+      "why_invisible": "Three different flags could have said the axis was hidden and only one of them moves: the label's own get_visible() stays True, ax.xaxis.get_visible() stays True, and ax.axison is the one that goes False. Checking the two obvious ones looked like checking visibility.",
+      "caught_by": "running it on a real figure",
+      "check_now": "tick labels are gated on ax.axison, a test asserts a hidden axis contributes no text at all, and the frame check names the edge that was crossed and by how much, with a tolerance scaled to the font's own descent",
+      "conclusion_changed": false
     }
   ]
 }

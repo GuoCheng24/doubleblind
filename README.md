@@ -15,12 +15,13 @@ Three things catch that, and **no two of them catch the same defects**:
 
 | | finds | structurally cannot see |
 |---|---|---|
-| **a machine that recomputes** | a number that exists in no file; a built artifact older than the data behind it; a bound stated tighter than the interval | anything nobody thought to check — above all a **correct number inside a sentence that does not follow from it** |
-| **a reader with no context** | claims that do not follow; a comparison pointing the wrong way; a framing the data will not carry | anything needing exact recomputation — a fabricated number that looks plausible reads as fine |
-| **your own eyes, on the rendered thing** | labels run together; a figure whose slope reads backwards; a character the font could not draw | anything past the first page, and anything that needs arithmetic |
+| **a machine that recomputes**<br>`doubleblind trace` | a number that exists in no file; a bound stated tighter than the interval; a quantity written in words | anything nobody thought to check — above all a **correct number inside a sentence that does not follow from it** |
+| **a reader with no context**<br>`doubleblind review` | claims that do not follow; a comparison pointing the wrong way; a framing the data will not carry | anything needing exact recomputation — a fabricated number that looks plausible reads as fine |
+| **a machine that looks at the picture**<br>`doubleblind render` | two labels that read as one word; a caption unreadable at the size it will be seen; a headline over artwork; a character the font could not draw | **whether the shape a reader takes from the figure is the shape the data supports** |
 
-`doubleblind` automates the first two, tells you honestly where each one stops,
-and keeps a ledger of what got through anyway.
+Each of the three is automated here, each one is told where it stops, and a
+ledger records what got through anyway — including the six defects that got
+through in this repository.
 
 ```bash
 pip install -e .          # or run it in place: python -m doubleblind
@@ -122,6 +123,60 @@ linted by its own test suite, so it cannot rot.
 
 ---
 
+## The third layer: what a reader sees
+
+The ledger is blunt about where the gap was. Of the defects recorded in it, **9
+were caught by a person looking at the rendered artifact**, and 6 of those 9
+were rendering defects — a headline lying across a tile grid, two labels three
+pixels apart that read as one word, a subscript the font could not draw, a
+caption nobody could read in a thumbnail. Every number behind all of them was
+correct, so neither of the other two layers could ever have reached them.
+
+```console
+$ doubleblind render examples/broken/figure.py
+
+  [render] 13 text objects; legibility floor 33 pt on the canvas is 10 px at 30%
+  ! 'One category does not move' sits on undeclared artwork (28x6 px of its box)
+  ! 'per category' sits across a rule
+  ! 11 pt is 3.3 px at 30% - unreadable: 'measured on the 150-item subset, paired'
+  ! contrast 1.3:1 (needs 4.5:1) for 'provisional'
+  ! 'strict' and '87.5%' are 5 px apart and read as one word
+  ! the font cannot draw '129514 (\N{TEST TUBE})' - it renders as an empty box
+```
+
+Six rules, one per defect class, each of them bought:
+
+- **Legibility at the size it will be seen.** A figure drawn at 1200 px is
+  unfurled at about 360 px, so text under ~10 px there is texture whatever it
+  says — a floor of 33 pt on the canvas. Declare a footer or a watermark as
+  chrome with `gid="doubleblind:chrome"` and it is exempt; an earlier version
+  measured legible *area* instead and made a figure fail harder the more
+  carefully it was labelled.
+- **Contrast**, WCAG 2.1, against whatever the text actually sits on.
+- **Text on artwork** at *any* real overlap rather than a share of its own box —
+  a title over a field of tiles covers a few percent of that box and is still a
+  title with tiles through it. A 12% threshold passed that twice.
+- **Text across a rule**, because a rule is a `Line2D` and every check that
+  walked `ax.patches` reported clean while column headers sat on a separator.
+- **Text that merely touches** — a gap under a third of a character on a shared
+  line, negative gaps included, because three pixels is not an overlap and reads
+  as one run-on word.
+- **Characters the font cannot draw**, from the renderer's own warnings, because
+  a missing glyph has a bounding box like any other and is invisible to every
+  geometric test.
+
+`matplotlib` is the one optional dependency: `pip install 'doubleblind[render]'`.
+
+**And the blind spot, pinned down like the others.**
+`examples/broken/figure_reads_backwards.py` passes this layer completely. Every
+number in it is right and nothing in it is geometrically wrong. What a reader
+takes from it is a steeply rising relationship, because each family's points are
+joined and each of those segments is steep. Over the range actually measured the
+pooled slope is **0.30**; the within-family segments the eye follows have slope
+**30**. A test asserts that `render` keeps passing it, because no rule about
+geometry knows which slope a reader will perceive — and that is the part still
+left to a person.
+
 ## On your own work
 
 ```bash
@@ -166,11 +221,12 @@ them and be called traced. `trace` says so when the pool gets large. Point
 
 [`ledger/`](ledger/) records real defects that shipped, each with the layer that
 missed it and why that layer could not have seen it. It is the part of this
-repository that cannot be regenerated, and it includes 5 defects in
+repository that cannot be regenerated, and it includes 6 defects in
 `doubleblind` itself - one of which disarmed a CI step for every document in
-the repository at once, and one of which only appeared when the package was
-installed into a clean virtualenv and the README's own quickstart was followed
-from somewhere else.
+the repository at once, one that only appeared when the package was installed
+into a clean virtualenv and the README's own quickstart was followed from
+somewhere else, and one where three different flags could have said an axis was
+hidden and only the third one moved.
 
 The pattern is consistent enough to plan around. On a document that had already
 passed 37 mechanical checks and two rounds of its author's own review, a
@@ -186,11 +242,11 @@ had credited 5 of them from a half-written trace. Counted as no-answer instead,
 three of four confidence intervals stopped containing the number being
 reproduced. The page's verdict turned on it and the page did not mention it.
 
-And the honest part: of 19 recorded defects, **9 were caught by a person
+And the honest part: of 20 recorded defects, **9 were caught by a person
 looking at the rendered artifact** — 6 of those 9 rendering defects that no
-amount of number-checking would ever have reached. The most recent is this
-repository's own social card, which passed its own legibility, contrast and
-collision audit with a label three pixels from the bar it labelled. That is the number this tooling
+amount of number-checking would ever have reached. That is the bar
+`doubleblind render` exists to shrink, and the ledger is how you find out
+whether it does. That is the number this tooling
 exists to shrink, and the ledger is how you find out whether it does.
 
 ## What this is not
