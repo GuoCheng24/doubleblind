@@ -69,6 +69,34 @@ jobs:
               print("\n".join(bad)); sys.exit(1)
           PY
 
+      # An entry appended with plausible-looking field names instead of the
+      # schema's took down the README trace step with a KeyError from
+      # summarize.py. A guard that fails is better than one that does not; a
+      # guard that says which entry and which field is better still.
+      - name: Every ledger entry has the fields the ledger uses
+        run: |
+          python - <<'PY'
+          import json, sys
+          REQUIRED = ["id", "artifact", "category", "shipped", "missed_by",
+                      "why_invisible", "caught_by", "check_now", "conclusion_changed"]
+          d = json.load(open("ledger/findings.json"))
+          rows = d.get("findings", d)
+          bad = []
+          seen = set()
+          for i, r in enumerate(rows):
+              for k in REQUIRED:
+                  if k not in r:
+                      bad.append(f"entry {i} ({r.get('id', 'no id')}): missing {k!r}")
+                  elif k != "conclusion_changed" and not str(r[k]).strip():
+                      bad.append(f"entry {i} ({r.get('id', 'no id')}): empty {k!r}")
+              if r.get("id") in seen:
+                  bad.append(f"entry {i}: duplicate id {r.get('id')!r}")
+              seen.add(r.get("id"))
+          print(f"{len(rows)} ledger entries checked against {len(REQUIRED)} required fields")
+          if bad:
+              print("\n".join(bad)); sys.exit(1)
+          PY
+
       - name: Trace the README against the ledger
         run: |
           python -m doubleblind trace README.md \
