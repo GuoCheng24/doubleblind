@@ -34,6 +34,10 @@ LABEL = {
     "running it on a real figure": "first real use",
     "installing it into a clean virtualenv and following the README from elsewhere":
         "first real use",
+    # Not "first real use": nothing here changed. The environment moved under a
+    # stable artifact, and the layer that missed it was this repository's own
+    # tests, which pass on one machine's matplotlib.
+    "a dependency's minor version, reproduced in a clean virtualenv": "a version bump",
 }
 COUNTS = collections.Counter(f["caught_by"] for f in FINDINGS)
 missing = sorted(set(COUNTS) - set(LABEL))
@@ -52,7 +56,11 @@ WARN = "#b4562a"
 
 
 def chart(ax, accent):
-    top, gap, end = 3.30, 0.72, 10.95
+    # Five rows, not four: the ledger gained a catcher and the fifth row
+    # at the old spacing sat 78% on top of the footer URL. The card's own
+    # acceptance test refused to save it, which is the only reason this
+    # was noticed - the chart is generated, so nobody looks at it.
+    top, gap, end = 3.45, 0.60, 10.95
 
     # Where the bars start is measured, not guessed. A hand-picked x0 left the
     # longest label touching its bar with a 3 px gap - legible to every
