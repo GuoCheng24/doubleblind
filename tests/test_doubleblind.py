@@ -8,8 +8,11 @@ understating the need for the other, and nobody would notice. So the blind spot
 has a test.
 """
 
+import contextlib
+import io
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -18,6 +21,7 @@ import unittest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
+from doubleblind import cli  # noqa: E402
 from doubleblind.cli import read_allow  # noqa: E402
 from doubleblind.packet import build_packet, intent_leaks  # noqa: E402
 from doubleblind.trace import (  # noqa: E402
@@ -395,6 +399,34 @@ class CommandLine(unittest.TestCase):
     def test_lint_exits_zero_on_the_clean_brief(self):
         p = self._run("lint", "examples/brief-clean.md", "--no-color")
         self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
+
+
+class BlindnessRecord(unittest.TestCase):
+    """The packet digest is quoted in a record, so it has to be the whole thing
+    and it has to match what a third party would compute with sha256sum."""
+
+    def test_review_prints_the_full_digest_not_a_prefix(self):
+        import hashlib
+        d = tempfile.mkdtemp()
+        art = os.path.join(d, "a.md")
+        with open(art, "w", encoding="utf-8") as fh:
+            fh.write("# t\n\nThe number is 5.\n")
+        cwd = os.getcwd()
+        os.chdir(d)
+        try:
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                cli.main(["review", "a.md"])
+            text = out.getvalue()
+        finally:
+            os.chdir(cwd)
+        m = re.search(r"sha256\s+([0-9a-f]+)", text)
+        self.assertIsNotNone(m, "review printed no digest")
+        self.assertEqual(len(m.group(1)), 64, "a truncated digest is not a commitment")
+        with open(os.path.join(d, "packet.md"), "rb") as fh:
+            self.assertEqual(m.group(1), hashlib.sha256(fh.read()).hexdigest(),
+                             "the printed digest is not the one sha256sum gives")
+
 
 
 if __name__ == "__main__":

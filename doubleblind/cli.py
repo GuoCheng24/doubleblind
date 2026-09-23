@@ -161,8 +161,11 @@ def cmd_packet(args: argparse.Namespace) -> int:
     else:
         with open(args.output, "w", encoding="utf-8") as fh:
             fh.write(text)
-        print(f"packet: {args.output}  ({len(text)} bytes, "
-              f"sha256 {_packet.packet_fingerprint(text)[:16]}...)")
+        # The full digest, not a prefix: this line is what a blindness record
+        # quotes, and a truncated hash is a guard against a slip rather than a
+        # commitment to what the reviewer was given.
+        print(f"packet: {args.output}  ({len(text)} bytes)")
+        print(f"sha256  {_packet.packet_fingerprint(text)}")
     return 0
 
 
@@ -213,7 +216,8 @@ def cmd_review(args: argparse.Namespace) -> int:
         fh.write(text)
     fp = _packet.packet_fingerprint(text)
     name, cmd = ADAPTERS[args.agent]
-    print(f"packet: {out}  ({len(text)} bytes, sha256 {fp[:16]}...)")
+    print(f"packet: {out}  ({len(text)} bytes)")
+    print(f"sha256  {fp}")
     print()
     print(f"Send it with {name}:")
     print()

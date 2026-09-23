@@ -124,6 +124,11 @@ try to prove any of it for you — it has no access to your session — so if yo
 need it proven rather than recorded, use a host that persists session events and
 check them.
 
+[`blindness.md`](blindness.md) has the record format, what each of the three
+lines does and does not establish, and the four ways blindness is actually lost
+— the first of which is that a sub-agent launched inside your repository reads
+your project instruction files at zero conversation turns.
+
 ## 7. Turn what it found into a check
 
 This is the step that compounds. A finding that stays a report is worth one
