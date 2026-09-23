@@ -88,28 +88,36 @@ def _texts(fig):
     """Every string a reader will actually see.
 
     Tick labels are the trap, twice over. `ax.axis("off")` hides the axis but
+    Returns `(text, role)`. The role is not decoration: an x-tick and a y-tick
+    at the origin sit diagonally adjacent by construction, and without knowing
+    which axis each came from the run-on-word rule calls them one word. That
+    happened - on matplotlib 3.11 the origin ticks `0` and `0.0` overlap by 5
+    px, and a fixture that is supposed to audit clean started failing.
+
+    Tick labels are the trap, twice over. `ax.axis("off")` hides the axis but
     leaves every label in `get_xticklabels()`, each still reporting
     `get_visible() == True`, and `ax.xaxis.get_visible()` stays True as well -
     the flag that actually moves is `ax.axison`. Counting them buried six real
     findings under twenty complaints about ticks that are not drawn.
     """
-    out = list(fig.texts)
+    out = [(t, "figure") for t in fig.texts]
     for ax in fig.axes:
         if not ax.get_visible():
             continue
-        out += list(ax.texts)
-        for lbl in (ax.title, ax.xaxis.label, ax.yaxis.label):
+        out += [(t, "annotation") for t in ax.texts]
+        for lbl, role in ((ax.title, "title"), (ax.xaxis.label, "axis-label"),
+                          (ax.yaxis.label, "axis-label")):
             if lbl is not None:
-                out.append(lbl)
+                out.append((lbl, role))
         if getattr(ax, "axison", True):
             if ax.xaxis.get_visible():
-                out += list(ax.get_xticklabels())
+                out += [(t, "xtick") for t in ax.get_xticklabels()]
             if ax.yaxis.get_visible():
-                out += list(ax.get_yticklabels())
+                out += [(t, "ytick") for t in ax.get_yticklabels()]
         leg = ax.get_legend()
         if leg is not None and leg.get_visible():
-            out += list(leg.get_texts())
-    return [t for t in out
+            out += [(t, "legend") for t in leg.get_texts()]
+    return [(t, role) for t, role in out
             if t.get_text() and t.get_text().strip() and t.get_visible()]
 
 
@@ -173,10 +181,10 @@ def audit(fig, scale=UNFURL_SCALE, min_ratio=4.5, ground=None, verbose=True):
 
     chrome_area = message_area = 0.0
     boxes = []
-    for t in _texts(fig):
+    for t, role in _texts(fig):
         s = t.get_text().strip()
         box = t.get_window_extent(r)
-        boxes.append((t, s, box))
+        boxes.append((t, s, box, role))
         area = box.width * box.height
         is_chrome = t.get_gid() == CHROME
 
@@ -268,7 +276,13 @@ def audit(fig, scale=UNFURL_SCALE, min_ratio=4.5, ground=None, verbose=True):
         for j in range(len(boxes)):
             if i == j:
                 continue
-            (ta, sa, ba), (tb, sb, bb) = boxes[i], boxes[j]
+            (ta, sa, ba, ra), (tb, sb, bb, rb) = boxes[i], boxes[j]
+            # An x-tick and a y-tick are adjacent at the origin by
+            # construction, and nobody reads across a corner. Ticks on the
+            # SAME axis still count: a crowded axis is the defect this rule is
+            # for.
+            if {ra, rb} == {"xtick", "ytick"}:
+                continue
             same_line = min(ba.y1, bb.y1) - max(ba.y0, bb.y0) > 0.4 * min(ba.height, bb.height)
             gap = bb.x0 - ba.x1
             per_char = ba.width / max(len(sa), 1)

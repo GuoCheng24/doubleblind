@@ -169,6 +169,38 @@ class Render(unittest.TestCase):
     def test_the_clean_figure_has_nothing_wrong_with_it(self):
         self.assertEqual(self._audit("figure_ok.py"), [])
 
+    def test_the_planted_run_on_pair_has_margin_against_the_threshold(self):
+        """A fixture two pixels from the threshold tests the threshold.
+
+        The run-on pair was planted at a gap of 4.7 px against a 6.6 px
+        threshold. matplotlib 3.11 renders "strict" 2.2 px narrower, the gap
+        became 7.0, and the planted defect stopped being detected - so CI went
+        red on a figure that had not changed. This asserts the margin rather
+        than the detection, because the detection is what drifted.
+        """
+        import matplotlib
+        matplotlib.use("Agg")
+        import runpy
+        import matplotlib.pyplot as plt
+        plt.close("all")
+        runpy.run_path(os.path.join(ROOT, "examples", "broken", "figure.py"))
+        fig = plt.gcf()
+        fig.canvas.draw()
+        r = fig.canvas.get_renderer()
+        box = {t.get_text().strip(): t.get_window_extent(r)
+               for ax in fig.axes for t in ax.texts
+               if t.get_text().strip() in ("strict", "87.5%")}
+        a, b = box["strict"], box["87.5%"]
+        per_char = a.width / len("strict")
+        gap = b.x0 - a.x1
+        run_on, overlap = 0.33 * per_char, -0.5 * per_char
+        self.assertLess(gap, run_on - 3.0,
+                        f"gap {gap:.1f} is within 3 px of the {run_on:.1f} px "
+                        "threshold; a font-metric change will flip it")
+        self.assertGreater(gap, overlap + 3.0,
+                           f"gap {gap:.1f} is within 3 px of the overlap branch")
+        plt.close("all")
+
     def test_every_planted_defect_is_reported(self):
         found = " | ".join(self._audit("broken/figure.py"))
         for phrase in ("undeclared artwork", "across a horizontal rule", "unreadable",

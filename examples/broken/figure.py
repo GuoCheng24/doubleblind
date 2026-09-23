@@ -42,9 +42,15 @@ for i, (name, after) in enumerate([("colour", 91.0), ("count", 89.0), ("shape", 
     ax.text(3.1 + 7.2 * after / 100 + 0.2, y, f"{after:.0f}%", fontsize=34,
             fontweight="bold", color=ACCENT, va="center")
 
-# 5 - two labels three pixels apart on the same line
+# 5 - two labels a couple of pixels apart on the same line, which read as one
+# run-on word. The gap has to be planted with MARGIN: at x=2.05 it measured
+# 4.7 px against a 6.6 px threshold on matplotlib 3.10 and 7.0 px against 6.5
+# on 3.11, because "strict" renders 2.2 px narrower there - so the fixture was
+# testing the threshold rather than the detector, and a minor version bump
+# flipped it. At x=2.00 the gap is about -0.3 px and 2.0 px on those two, both
+# comfortably inside the rule and both far from the overlap branch.
 ax.text(0.8, 1.15, "strict", fontsize=34, color=INK, va="center")
-ax.text(2.05, 1.15, "87.5%", fontsize=34, color=INK, va="center")
+ax.text(2.00, 1.15, "87.5%", fontsize=34, color=INK, va="center")
 
 # 1 - a caption far under the legibility floor
 ax.text(0.8, 0.95, "measured on the 150-item subset, paired", fontsize=11, color="#55585c")
