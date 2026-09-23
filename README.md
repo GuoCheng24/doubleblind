@@ -242,7 +242,7 @@ had credited 5 of them from a half-written trace. Counted as no-answer instead,
 three of four confidence intervals stopped containing the number being
 reproduced. The page's verdict turned on it and the page did not mention it.
 
-And the honest part: of 21 recorded defects, **10 were caught by a person
+And the honest part: of 22 recorded defects, **10 were caught by a person
 looking at the rendered artifact** — 7 of those 10 rendering defects that no
 amount of number-checking would ever have reached. That is the bar
 `doubleblind render` exists to shrink, and the ledger is how you find out

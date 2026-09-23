@@ -8,6 +8,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      # A version matrix exists to show every combination; cancelling the rest
+      # when one fails hides which versions are actually affected, which is
+      # the only thing the matrix is for.
+      fail-fast: false
       matrix:
         python-version: ["3.9", "3.13"]
         # The figure layer reads font metrics, and those move between
