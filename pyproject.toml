@@ -25,7 +25,11 @@ dependencies = []
 [project.optional-dependencies]
 # The two core layers are standard library only. The figure layer needs a
 # renderer, and that is the only reason to install anything.
-render = ["matplotlib>=3.5"]
+# 3.9 is the oldest release tested, and the oldest with wheels for the Python
+# versions this is tested on. 3.5-3.8 were built against numpy 1 and produce
+# `_ARRAY_API not found` next to a current numpy - a floor nobody exercises is
+# a claim with no evidence behind it, which is the thing this package is about.
+render = ["matplotlib>=3.9"]
 
 [project.urls]
 Homepage = "https://github.com/GuoCheng24/doubleblind"

@@ -249,6 +249,19 @@ Run on its first real figure, the auditor produced twenty complaints about tick 
 - **Caught by:** running it on a real figure
 - **Check now:** tick labels are gated on ax.axison, a test asserts a hidden axis contributes no text at all, and the frame check names the edge that was crossed and by how much, with a tolerance scaled to the font's own descent
 
+## guard wrong on a dependency version  (1)
+
+### `render-tick-corner-and-threshold-margin`
+
+*the figure layer itself*
+
+The run-on-word rule called an x-tick and a y-tick at the origin one word - they are diagonally adjacent by construction and nobody reads across a corner - so on matplotlib 3.11 a fixture whose job is to audit CLEAN started failing. And the planted run-on pair sat 4.7 px from a 6.6 px threshold; 3.11 renders 'strict' 2.2 px narrower, the gap became 7.0 px and the planted defect stopped being detected.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** Both tests passed on the author's matplotlib. Nothing in the repository changed; a dependency's minor release did, and the figure layer reads font metrics.
+- **Caught by:** a dependency's minor version, reproduced in a clean virtualenv
+- **Check now:** _texts() carries each string's role and the rule skips x-tick/y-tick pairs; a test asserts the planted gap keeps 3 px of margin on BOTH sides of the threshold, because the detection is what drifted; CI runs the oldest supported matplotlib and the newest
+
 ---
 
 Counts over this file are printed by `summarize.py`, which is what the
