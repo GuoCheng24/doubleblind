@@ -167,7 +167,7 @@ class Render(unittest.TestCase):
 
     def test_every_planted_defect_is_reported(self):
         found = " | ".join(self._audit("broken/figure.py"))
-        for phrase in ("undeclared artwork", "across a rule", "unreadable",
+        for phrase in ("undeclared artwork", "across a horizontal rule", "unreadable",
                        "contrast", "read as one word", "cannot draw"):
             self.assertIn(phrase, found, f"{phrase!r} not reported:\n{found}")
 
@@ -186,6 +186,41 @@ class Render(unittest.TestCase):
         plt.close(fig)
         self.assertGreater(with_axis, 0)
         self.assertEqual(without, 0, "a hidden axis still contributed text")
+
+    def test_a_vertical_rule_through_text_is_caught(self):
+        """The first version checked only for rules that are thin in height.
+
+        A vertical threshold line drawn through a caption passed every check and
+        was obvious the moment anyone looked at the render: a dashed line ran
+        straight through the p-value.
+        """
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        from doubleblind.render import audit
+
+        def fig_with_rule(y0, y1):
+            fig = plt.figure(figsize=(12, 6.3), dpi=100)
+            fig.patch.set_facecolor("#fbfaf8")
+            ax = fig.add_axes([0, 0, 1, 1])
+            ax.set_xlim(0, 12)
+            ax.set_ylim(0, 6.3)
+            ax.axis("off")
+            ax.plot([6, 6], [y0, y1], color="#55585c", lw=2.4, ls=(0, (5, 4)))
+            ax.text(4.2, 2.0, "McNemar p = 0.549", fontsize=34, color="#17181a",
+                    va="center")
+            return fig
+
+        through = fig_with_rule(1.0, 5.0)
+        found = audit(through, verbose=False)
+        plt.close(through)
+        self.assertTrue(any("vertical rule" in p for p in found),
+                        f"a vertical rule through text was not reported: {found}")
+
+        clear = fig_with_rule(3.5, 5.0)
+        self.assertEqual(audit(clear, verbose=False), [],
+                         "a rule clear of the text must not be reported")
+        plt.close(clear)
 
     def test_contrast_matches_wcag(self):
         from doubleblind.render import contrast

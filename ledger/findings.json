@@ -253,6 +253,18 @@
       "caught_by": "running it on a real figure",
       "check_now": "tick labels are gated on ax.axison, a test asserts a hidden axis contributes no text at all, and the frame check names the edge that was crossed and by how much, with a tolerance scaled to the font's own descent",
       "conclusion_changed": false
+    },
+    {
+      "id": "vertical-rule-through-text",
+      "source": "doubleblind-itself",
+      "artifact": "this repository's figure auditor",
+      "category": "rendering",
+      "shipped": "A social card drew a dashed vertical threshold line through its own caption - the line ran straight through 'p = 0.549'. The figure auditor passed it, as did the card's own acceptance test.",
+      "missed_by": "mechanical",
+      "why_invisible": "The rule check skipped any line whose bounding box was taller than eight pixels, on the reasoning that a rule is thin. That is true of a rule, and the test was written for horizontal ones only, so every vertical rule was excluded by the very condition meant to identify rules.",
+      "caught_by": "human eye",
+      "check_now": "a line counts as a rule when it is thin in EITHER direction, the report names which, and a test covers a vertical rule through text and a vertical rule clear of it",
+      "conclusion_changed": false
     }
   ]
 }

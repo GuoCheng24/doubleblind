@@ -78,7 +78,7 @@ A 37-check guard printed "every number on the page is re-derived from results/" 
 - **Caught by:** zero-context reviewer
 - **Check now:** the unclosed count is a first-class reported result and the sensitivity of the verdict to it is written to a results file
 
-## rendering  (6)
+## rendering  (7)
 
 ### `buried-labels`
 
@@ -145,6 +145,17 @@ The longest bar label ended three pixels from the bar it labelled, so at a glanc
 - **Why it could not see it:** The gap was between text and a filled rectangle rather than between two pieces of text, and it was positive. Every threshold in the audit was written for overlap, and three pixels of clearance is not overlap.
 - **Caught by:** human eye
 - **Check now:** the bars start at a measured offset past the widest rendered label instead of a hand-picked coordinate, so the gap cannot depend on how long the labels happen to be
+
+### `vertical-rule-through-text`
+
+*this repository's figure auditor*
+
+A social card drew a dashed vertical threshold line through its own caption - the line ran straight through 'p = 0.549'. The figure auditor passed it, as did the card's own acceptance test.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** The rule check skipped any line whose bounding box was taller than eight pixels, on the reasoning that a rule is thin. That is true of a rule, and the test was written for horizontal ones only, so every vertical rule was excluded by the very condition meant to identify rules.
+- **Caught by:** human eye
+- **Check now:** a line counts as a rule when it is thin in EITHER direction, the report names which, and a test covers a vertical rule through text and a vertical rule clear of it
 
 ## staleness  (2)
 

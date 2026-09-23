@@ -220,10 +220,21 @@ def audit(fig, scale=UNFURL_SCALE, min_ratio=4.5, ground=None, verbose=True):
             if len(xs) < 2 or ln.get_linestyle() == "None":
                 continue
             lb = ln.get_window_extent(r) if hasattr(ln, "get_window_extent") else None
-            if lb is None or lb.height > 8:        # near-horizontal rules only
+            if lb is None:
                 continue
-            if box.x0 < lb.x1 and box.x1 > lb.x0 and box.y0 < lb.y1 + 4 and box.y1 > lb.y0 - 4:
-                problems.append(f"{s[:32]!r} sits across a rule")
+            # A rule is thin in ONE direction, and the first version of this
+            # checked only for thin-in-height. A vertical threshold line drawn
+            # through a caption passed every check and was obvious in the
+            # render: a dashed line ran straight through "p = 0.549".
+            horizontal = lb.height <= 8
+            vertical = lb.width <= 8
+            if not (horizontal or vertical):
+                continue
+            pad = 4
+            if (box.x0 < lb.x1 + pad and box.x1 > lb.x0 - pad
+                    and box.y0 < lb.y1 + pad and box.y1 > lb.y0 - pad):
+                problems.append(
+                    f"{s[:32]!r} sits across a {'vertical' if vertical else 'horizontal'} rule")
                 break
 
         if not declared:

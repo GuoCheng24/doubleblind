@@ -221,7 +221,7 @@ them and be called traced. `trace` says so when the pool gets large. Point
 
 [`ledger/`](ledger/) records real defects that shipped, each with the layer that
 missed it and why that layer could not have seen it. It is the part of this
-repository that cannot be regenerated, and it includes 6 defects in
+repository that cannot be regenerated, and it includes 7 defects in
 `doubleblind` itself - one of which disarmed a CI step for every document in
 the repository at once, one that only appeared when the package was installed
 into a clean virtualenv and the README's own quickstart was followed from
@@ -242,8 +242,8 @@ had credited 5 of them from a half-written trace. Counted as no-answer instead,
 three of four confidence intervals stopped containing the number being
 reproduced. The page's verdict turned on it and the page did not mention it.
 
-And the honest part: of 20 recorded defects, **9 were caught by a person
-looking at the rendered artifact** — 6 of those 9 rendering defects that no
+And the honest part: of 21 recorded defects, **10 were caught by a person
+looking at the rendered artifact** — 7 of those 10 rendering defects that no
 amount of number-checking would ever have reached. That is the bar
 `doubleblind render` exists to shrink, and the ledger is how you find out
 whether it does. That is the number this tooling
