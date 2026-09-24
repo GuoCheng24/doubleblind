@@ -3,10 +3,11 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-# Not publishable on PyPI under this name: `doubleblind` is taken by an
-# unrelated project. Kept because it is the import name and the repository
-# name; if this is ever published it needs a distribution name of its own.
-name = "doubleblind"
+# The distribution is `doubleblind-audit`; the import name and the repository
+# stay `doubleblind`. The bare name on PyPI belongs to an unrelated project -
+# a filename randomiser - so publishing under it is impossible and telling
+# anyone to `pip install doubleblind` installs somebody else's package.
+name = "doubleblind-audit"
 version = "0.1.0"
 description = "Three layers that cannot see each other's mistakes: re-derive every number in prose from a committed file, brief a reviewer that was told nothing, and audit the figure a reader will actually see."
 readme = "README.md"
@@ -20,6 +21,16 @@ classifiers = [
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
+  # CI runs 3.9 and 3.13, each against the oldest supported matplotlib and the
+  # newest. PyPI filters on these, and a package that lists none is a package
+  # nobody can filter to.
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Environment :: Console",
+  "Operating System :: OS Independent",
   "Topic :: Scientific/Engineering",
   "Topic :: Software Development :: Quality Assurance",
 ]
@@ -37,6 +48,9 @@ render = ["matplotlib>=3.9"]
 [project.urls]
 Homepage = "https://github.com/GuoCheng24/doubleblind"
 Ledger = "https://github.com/GuoCheng24/doubleblind/tree/main/ledger"
+Protocol = "https://github.com/GuoCheng24/doubleblind/tree/main/protocol"
+Source = "https://github.com/GuoCheng24/doubleblind"
+Issues = "https://github.com/GuoCheng24/doubleblind/issues"
 
 [project.scripts]
 doubleblind = "doubleblind.cli:main"

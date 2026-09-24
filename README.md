@@ -1,8 +1,9 @@
 # doubleblind
 
 [![tests](https://github.com/GuoCheng24/doubleblind/actions/workflows/ci.yml/badge.svg)](https://github.com/GuoCheng24/doubleblind/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/doubleblind-audit?label=PyPI&color=0b6e4f)](https://pypi.org/project/doubleblind-audit/)
 [![python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
-[![licence](https://img.shields.io/badge/licence-MIT-green)](LICENSE)
+[![licence](https://img.shields.io/badge/licence-MIT-green)](https://github.com/GuoCheng24/doubleblind/blob/main/LICENSE)
 
 **Your agent wrote the report. Ask it whether the report is true and it will say yes.**
 
@@ -24,8 +25,12 @@ ledger records what got through anyway — including the six defects that got
 through in this repository.
 
 ```bash
-pip install -e .          # or run it in place: python -m doubleblind
+pip install doubleblind-audit     # the command is `doubleblind`
 ```
+
+The distribution name carries a suffix because the bare one on PyPI is an
+unrelated project; what you import and type is `doubleblind`. From a clone,
+`pip install -e .`, or run it in place with `python -m doubleblind`.
 
 Standard library only, no dependencies, Python 3.9+. The reviewer layer works
 with Claude Code, Codex CLI, DeepSeek, Kimi, or any OpenAI-compatible endpoint.
@@ -165,9 +170,9 @@ Six rules, one per defect class, each of them bought:
   a missing glyph has a bounding box like any other and is invisible to every
   geometric test.
 
-`matplotlib` is the one optional dependency: from the clone, `pip install -e '.[render]'`.
+`matplotlib` is the one optional dependency: `pip install 'doubleblind-audit[render]'`.
 
-Not `pip install doubleblind` — that name belongs to an unrelated project on PyPI ([guyteichman/DoubleBlind](https://pypi.org/project/doubleblind/), a filename randomiser), so the plain form would install someone else's package. This one installs from the clone.
+The distribution is **`doubleblind-audit`**; what you import and type is `doubleblind`. The bare name on PyPI belongs to an unrelated project ([a filename randomiser](https://pypi.org/project/doubleblind/)), so `pip install doubleblind` fetches someone else's package.
 
 **And the blind spot, pinned down like the others.**
 `examples/broken/figure_reads_backwards.py` passes this layer completely. Every
@@ -197,8 +202,8 @@ doubleblind review README.md --data results/ --agent codex
 ```
 
 `trace` exits 1 on an unsupported number, `lint` exits 1 on a leaky brief, so
-both drop into CI unchanged. See [`protocol/`](protocol/) for the reviewer brief
-and the per-agent adapters, and [`protocol/blindness.md`](protocol/blindness.md)
+both drop into CI unchanged. See [`protocol/`](https://github.com/GuoCheng24/doubleblind/tree/main/protocol) for the reviewer brief
+and the per-agent adapters, and [`protocol/blindness.md`](https://github.com/GuoCheng24/doubleblind/blob/main/protocol/blindness.md)
 for how to record that the reviewer really was blind.
 
 ### What `trace` gets right, and where it gets weaker
@@ -221,7 +226,7 @@ them and be called traced. `trace` says so when the pool gets large. Point
 
 ## The ledger
 
-[`ledger/`](ledger/) records real defects that shipped, each with the layer that
+[`ledger/`](https://github.com/GuoCheng24/doubleblind/tree/main/ledger) records real defects that shipped, each with the layer that
 missed it and why that layer could not have seen it. It is the part of this
 repository that cannot be regenerated, and it includes 7 defects in
 `doubleblind` itself - one of which disarmed a CI step for every document in

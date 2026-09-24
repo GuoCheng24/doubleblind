@@ -1,0 +1,9 @@
+# The sdist ships the tests, so it has to ship what the tests read: the
+# ledger they count, the examples they audit, and the protocol the README
+# links to. Without this an unpacked sdist carries a test suite it cannot run.
+include README.md LICENSE CITATION.cff doubleblind-allow.txt
+recursive-include ledger *.json *.md *.py
+recursive-include examples *.py *.md *.json
+recursive-include protocol *.md
+recursive-include tests *.py
+recursive-include docs *.py
