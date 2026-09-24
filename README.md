@@ -21,7 +21,7 @@ Three things catch that, and **no two of them catch the same defects**:
 | **a machine that looks at the picture**<br>`doubleblind render` | two labels that read as one word; a caption unreadable at the size it will be seen; a headline over artwork; a character the font could not draw | **whether the shape a reader takes from the figure is the shape the data supports** |
 
 Each of the three is automated here, each one is told where it stops, and a
-ledger records what got through anyway — including the six defects that got
+ledger records what got through anyway — including the 8 defects that got
 through in this repository.
 
 ```bash
@@ -47,14 +47,17 @@ $ doubleblind trace examples/broken/report.md \
 
   UNSUPPORTED  97.50%   examples/broken/report.md:3
       On all 400 items of widgets-v2, the treatment reaches 97.50% accuracy against a
-      nearest committed values: 0.91 (results.json per_category_accuracy.colour),
-                                0.89 (results.json per_category_accuracy.count),
-                                0.875 (results.json treatment.accuracy)
+      nearest committed values: 0.91 (results.json per_category_accuracy.colour), 0.89 (results.json per_category_accuracy.count), 0.875 (results.json treatment.accuracy)
 
-  UNCHECKABLE  "two thirds"    examples/broken/report.md:10
+  UNCHECKABLE  "two thirds"   examples/broken/report.md:10
+      Head removal accounts for between two thirds and four fifths of the effect.
+      A quantity written as words cannot be traced to a file. Write the number.
   UNCHECKABLE  "four fifths"   examples/broken/report.md:10
       Head removal accounts for between two thirds and four fifths of the effect.
       A quantity written as words cannot be traced to a file. Write the number.
+
+8 numbers in examples/broken/report.md; 7 traced (2 of them only after reading a stored fraction as a percentage), 0 allowed, 1 unsupported.
+Evidence: 18 values from 2 sources.
 ```
 
 Two of three, and it pointed at the `0.875` that `97.50%` should have been. The
@@ -130,8 +133,8 @@ linted by its own test suite, so it cannot rot.
 
 ## The third layer: what a reader sees
 
-The ledger is blunt about where the gap was. Of the defects recorded in it, **9
-were caught by a person looking at the rendered artifact**, and 6 of those 9
+The ledger is blunt about where the gap was. Of the defects recorded in it, **10
+were caught by a person looking at the rendered artifact**, and 7 of those 10
 were rendering defects — a headline lying across a tile grid, two labels three
 pixels apart that read as one word, a subscript the font could not draw, a
 caption nobody could read in a thumbnail. Every number behind all of them was
@@ -142,12 +145,17 @@ $ doubleblind render examples/broken/figure.py
 
   [render] 13 text objects; legibility floor 33 pt on the canvas is 10 px at 30%
   ! 'One category does not move' sits on undeclared artwork (28x6 px of its box)
-  ! 'per category' sits across a rule
+  ! 'per category' sits across a horizontal rule
+  ! 'per category' sits on undeclared artwork (18x9 px of its box)
   ! 11 pt is 3.3 px at 30% - unreadable: 'measured on the 150-item subset, paired'
   ! contrast 1.3:1 (needs 4.5:1) for 'provisional'
-  ! 'strict' and '87.5%' are 5 px apart and read as one word
-  ! the font cannot draw '129514 (\N{TEST TUBE})' - it renders as an empty box
+  ! 16 pt is 4.8 px at 30% - unreadable: 'provisional'
+  ! 'strict' and '87.5%' touch and read as one word
+  ! 'measured on the 150-it' and '87.5%' overlap by 198 px
+  ! the font cannot draw '129514 (\\N{TEST TUBE})' - it renders as an empty box
 ```
+
+<sub>That is the output on matplotlib 3.10.8. The layer reads font metrics, so another version can move a gap by a pixel; CI runs the oldest supported matplotlib and the newest.</sub>
 
 Six rules, one per defect class, each of them bought:
 
@@ -249,7 +257,7 @@ had credited 5 of them from a half-written trace. Counted as no-answer instead,
 three of four confidence intervals stopped containing the number being
 reproduced. The page's verdict turned on it and the page did not mention it.
 
-And the honest part: of 22 recorded defects, **10 were caught by a person
+And the honest part: of 23 recorded defects, **10 were caught by a person
 looking at the rendered artifact** — 7 of those 10 rendering defects that no
 amount of number-checking would ever have reached. That is the bar
 `doubleblind render` exists to shrink, and the ledger is how you find out

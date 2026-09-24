@@ -277,6 +277,18 @@
    "check_now": "_texts() carries each string's role and the rule skips x-tick/y-tick pairs; a test asserts the planted gap keeps 3 px of margin on BOTH sides of the threshold, because the detection is what drifted; CI runs the oldest supported matplotlib and the newest",
    "conclusion_changed": false,
    "source": "CI red for three runs on three separate commits before anyone looked"
+  },
+  {
+   "id": "stale-count-matched-another-field",
+   "artifact": "this repository's README",
+   "category": "staleness",
+   "shipped": "\"9 were caught by a person looking at the rendered artifact, and 6 of those 9 were rendering defects\", after the ledger had moved to 10 and 7 - which the same README gave a few paragraphs later. It also said \"the six defects that got through in this repository\" when the ledger held seven.",
+   "missed_by": "mechanical",
+   "why_invisible": "trace checks that a number exists somewhere in the evidence, and both stale numbers did: 9 is how many findings one review run returned, and 6 is how many the zero-context reviewer caught. It matched each to the wrong field and passed. 'six', written as a word, was not checked at all.",
+   "caught_by": "zero-context reviewer",
+   "check_now": "a test binds each ledger count the README states to the summarize.py field it names, by the phrase around it; it was seen failing on the stale README before the fix",
+   "conclusion_changed": false,
+   "source": "doubleblind-itself"
   }
  ]
 }

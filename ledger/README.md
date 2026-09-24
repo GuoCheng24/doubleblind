@@ -157,7 +157,7 @@ A social card drew a dashed vertical threshold line through its own caption - th
 - **Caught by:** human eye
 - **Check now:** a line counts as a rule when it is thin in EITHER direction, the report names which, and a test covers a vertical rule through text and a vertical rule clear of it
 
-## staleness  (2)
+## staleness  (3)
 
 ### `stale-artifact`
 
@@ -180,6 +180,17 @@ A page describing an upstream pull request as open after it had been closed.
 - **Why it could not see it:** The guard checked that the links resolved. It never read the words next to them.
 - **Caught by:** human eye
 - **Check now:** the status written in prose after each link is parsed and compared with the live state
+
+### `stale-count-matched-another-field`
+
+*this repository's README*
+
+"9 were caught by a person looking at the rendered artifact, and 6 of those 9 were rendering defects", after the ledger had moved to 10 and 7 - which the same README gave a few paragraphs later. It also said "the six defects that got through in this repository" when the ledger held seven.
+
+- **Missed by:** a machine that recomputes
+- **Why it could not see it:** trace checks that a number exists somewhere in the evidence, and both stale numbers did: 9 is how many findings one review run returned, and 6 is how many the zero-context reviewer caught. It matched each to the wrong field and passed. 'six', written as a word, was not checked at all.
+- **Caught by:** zero-context reviewer
+- **Check now:** a test binds each ledger count the README states to the summarize.py field it names, by the phrase around it; it was seen failing on the stale README before the fix
 
 ## tooling  (6)
 

@@ -293,6 +293,11 @@ def audit(fig, scale=UNFURL_SCALE, min_ratio=4.5, ground=None, verbose=True):
                 if gap < -0.5 * per_char:
                     problems.append(
                         f"{sa[:22]!r} and {sb[:22]!r} overlap by {-gap:.0f} px")
+                elif gap < 0.5:
+                    # Rounds to zero, or is a fraction of a pixel negative:
+                    # "-0 px apart" was the message this used to print.
+                    problems.append(
+                        f"{sa[:22]!r} and {sb[:22]!r} touch and read as one word")
                 else:
                     problems.append(
                         f"{sa[:22]!r} and {sb[:22]!r} are {gap:.0f} px apart "

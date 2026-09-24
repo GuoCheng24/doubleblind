@@ -207,6 +207,11 @@ class Render(unittest.TestCase):
                        "contrast", "read as one word", "cannot draw"):
             self.assertIn(phrase, found, f"{phrase!r} not reported:\n{found}")
 
+    def test_a_gap_that_rounds_to_zero_is_not_printed_as_minus_zero(self):
+        """A gap of -0.3 px printed as "-0 px apart" on matplotlib 3.10."""
+        found = " | ".join(self._audit("broken/figure.py"))
+        self.assertNotRegex(found, r"-0 px")
+
     def test_a_hidden_axis_contributes_no_tick_labels(self):
         """`axis("off")` leaves the labels in get_xticklabels(), each reporting visible."""
         import matplotlib
@@ -477,6 +482,35 @@ class Descriptions(unittest.TestCase):
         self.assertIn(words[n], desc.lower(),
                       f"the table has {n} layers and the description says otherwise")
 
+
+
+class ReadmeLedgerCounts(unittest.TestCase):
+    """The README quoted "9 were caught by a person ... 6 of those 9" after the
+    ledger had moved to 10 and 7, and `trace` passed it: 9 and 6 each exist in
+    the evidence as *other* quantities (findings one review returned; findings
+    the zero-context reviewer caught). Existence is not identity. Each count
+    the README states about the ledger is bound here to the field it means."""
+
+    BINDINGS = [
+        (r"of (\d+) recorded defects", "total_findings"),
+        (r"\*\*(\d+)\s+were caught by a person", "caught_by_human_eye"),
+        (r"(\d+) of those \d+\s+(?:were )?rendering", "caught_by_human_eye_that_were_rendering"),
+        (r"including the (\d+) defects that got\s+through in this repository",
+         "defects_in_this_repository"),
+    ]
+
+    def test_each_count_matches_the_field_it_names(self):
+        out = subprocess.run([sys.executable, os.path.join(ROOT, "ledger", "summarize.py")],
+                             capture_output=True, text=True, check=True).stdout
+        fields = dict(line.split(" ", 1) for line in out.splitlines() if " " in line)
+        with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as fh:
+            readme = fh.read()
+        for pattern, field in self.BINDINGS:
+            found = re.findall(pattern, readme)
+            self.assertTrue(found, f"the README no longer states {field} as {pattern!r}")
+            for value in found:
+                self.assertEqual(value, fields[field],
+                                 f"README says {value} for {field}; the ledger says {fields[field]}")
 
 
 if __name__ == "__main__":
