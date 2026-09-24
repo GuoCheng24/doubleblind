@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 # a filename randomiser - so publishing under it is impossible and telling
 # anyone to `pip install doubleblind` installs somebody else's package.
 name = "doubleblind-audit"
-version = "0.1.0"
+version = "0.1.1"
 description = "Three layers that cannot see each other's mistakes: re-derive every number in prose from a committed file, brief a reviewer that was told nothing, and audit the figure a reader will actually see."
 readme = "README.md"
 requires-python = ">=3.9"
