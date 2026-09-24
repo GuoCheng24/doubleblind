@@ -3,6 +3,9 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
+# Not publishable on PyPI under this name: `doubleblind` is taken by an
+# unrelated project. Kept because it is the import name and the repository
+# name; if this is ever published it needs a distribution name of its own.
 name = "doubleblind"
 version = "0.1.0"
 description = "Two layers that cannot see each other's mistakes: trace every number in prose to a committed file, and brief a reviewer that was told nothing."

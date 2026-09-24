@@ -165,7 +165,9 @@ Six rules, one per defect class, each of them bought:
   a missing glyph has a bounding box like any other and is invisible to every
   geometric test.
 
-`matplotlib` is the one optional dependency: `pip install 'doubleblind[render]'`.
+`matplotlib` is the one optional dependency: from the clone, `pip install -e '.[render]'`.
+
+Not `pip install doubleblind` — that name belongs to an unrelated project on PyPI ([guyteichman/DoubleBlind](https://pypi.org/project/doubleblind/), a filename randomiser), so the plain form would install someone else's package. This one installs from the clone.
 
 **And the blind spot, pinned down like the others.**
 `examples/broken/figure_reads_backwards.py` passes this layer completely. Every
