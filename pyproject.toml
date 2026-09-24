@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 # name; if this is ever published it needs a distribution name of its own.
 name = "doubleblind"
 version = "0.1.0"
-description = "Two layers that cannot see each other's mistakes: trace every number in prose to a committed file, and brief a reviewer that was told nothing."
+description = "Three layers that cannot see each other's mistakes: re-derive every number in prose from a committed file, brief a reviewer that was told nothing, and audit the figure a reader will actually see."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}

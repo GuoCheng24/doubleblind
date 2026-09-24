@@ -461,5 +461,23 @@ class BlindnessRecord(unittest.TestCase):
 
 
 
+class Descriptions(unittest.TestCase):
+    """The packaging description and the GitHub description both said "Two
+    layers" after a third was added. Neither is rendered next to the table
+    that shows three, so nothing contradicted them in view."""
+
+    def test_the_package_description_counts_the_layers_the_readme_has(self):
+        with open(os.path.join(ROOT, "pyproject.toml"), encoding="utf-8") as fh:
+            desc = re.search(r'^description = "(.*)"', fh.read(), re.M).group(1)
+        with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as fh:
+            readme = fh.read()
+        n = len(re.findall(r"^\| \*\*[^|]+\*\*<br>`doubleblind \w+`", readme, re.M))
+        self.assertEqual(n, 3, "the layer table no longer has three rows")
+        words = {1: "one", 2: "two", 3: "three", 4: "four"}
+        self.assertIn(words[n], desc.lower(),
+                      f"the table has {n} layers and the description says otherwise")
+
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
