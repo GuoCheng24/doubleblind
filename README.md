@@ -270,6 +270,14 @@ really was a different model. `doubleblind` needs no such machinery because it
 never asserts the reviewer was independent. It tells you to write down the model
 and the packet hash, and gives you nothing if you don't.
 
+## Other things from the same desk
+
+- [groundwork](https://github.com/GuoCheng24/groundwork) — a research pipeline for coding agents whose first stage can return NO-GO; on PyPI as `groundwork-research`
+- [scholarcheck](https://github.com/GuoCheng24/scholarcheck) — verify that a citation actually exists, and audit a whole .bib in CI
+- [sciglyph](https://github.com/GuoCheng24/sciglyph) — draw publication figures as code, in pure matplotlib
+
+More at [github.com/GuoCheng24](https://github.com/GuoCheng24).
+
 ## Licence
 
 MIT.
