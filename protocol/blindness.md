@@ -69,6 +69,9 @@ project's goals and current claims in them. The conversation history is empty
 and the context is not.
 
 > Run the reviewer from a directory that contains the packet and nothing else.
+> In Claude Code 2.1.271 or later, a sub-agent defined with `omitClaudeMd: true`
+> also skips the user-level `CLAUDE.md`, which a directory change does not
+> ([protocol/README.md](README.md) has the definition).
 > It also removes the second version of the same leak: a repository the
 > reviewer can read is a repository whose commit messages it can read.
 

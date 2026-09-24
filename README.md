@@ -253,8 +253,7 @@ And the honest part: of 22 recorded defects, **10 were caught by a person
 looking at the rendered artifact** — 7 of those 10 rendering defects that no
 amount of number-checking would ever have reached. That is the bar
 `doubleblind render` exists to shrink, and the ledger is how you find out
-whether it does. That is the number this tooling
-exists to shrink, and the ledger is how you find out whether it does.
+whether it does.
 
 ## What this is not
 
@@ -269,6 +268,13 @@ un-forgeable evidence chain from the host's session events to prove the reviewer
 really was a different model. `doubleblind` needs no such machinery because it
 never asserts the reviewer was independent. It tells you to write down the model
 and the packet hash, and gives you nothing if you don't.
+
+ARIS also ships zero-context, cross-model audits of a paper's numbers
+(`paper-claim-audit`) and citations (`citation-audit`) — as of its main branch on
+2026-09-18. If you run ARIS, use them. What is different here: `trace` has no
+model in it at all, so it cannot be persuaded; `render` looks at the figure a
+reader will actually see; and each layer ships a test naming the defect it
+cannot catch, so the gaps are written down rather than discovered.
 
 ## Other things from the same desk
 

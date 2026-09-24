@@ -178,9 +178,11 @@ ADAPTERS = {
         "    run_in_background=False,\n"
         "    prompt=open('{packet}').read(),\n"
         ")\n"
-        "# A sub-agent starts with no conversation history by construction, so\n"
-        "# zero context needs no extra work. Pick a different model explicitly:\n"
-        "# same model with a fresh context still carries the priors that wrote it.",
+        "# A sub-agent starts with no conversation history, but it still loads\n"
+        "# your CLAUDE.md and AGENTS.md. Launch it from a directory holding only\n"
+        "# the packet, or use a reviewer defined with omitClaudeMd: true (see\n"
+        "# protocol/README.md). Pick a different model explicitly: the same model\n"
+        "# with a fresh context still carries the priors that wrote it.",
     ),
     "codex": (
         "Codex CLI",
@@ -191,14 +193,18 @@ ADAPTERS = {
         "DeepSeek",
         "curl -s https://api.deepseek.com/chat/completions \\\n"
         "  -H \"Authorization: Bearer $DEEPSEEK_API_KEY\" -H 'Content-Type: application/json' \\\n"
-        "  -d \"$(jq -Rs '{{model:\"deepseek-reasoner\",messages:[{{role:\"user\",content:.}}]}}' {packet})\"\n"
-        "# One request, one message. Sending history is what you are avoiding.",
+        "  -d \"$(jq -Rs '{{model:\"'${{DEEPSEEK_MODEL:?set DEEPSEEK_MODEL}}'\",messages:[{{role:\"user\",content:.}}]}}' {packet})\"\n"
+        "# One request, one message. Sending history is what you are avoiding.\n"
+        "# Model names change; take DEEPSEEK_MODEL from DeepSeek's current list\n"
+        "# (deepseek-v4-pro as of 2026-09).",
     ),
     "kimi": (
         "Kimi / Moonshot",
         "curl -s https://api.moonshot.cn/v1/chat/completions \\\n"
         "  -H \"Authorization: Bearer $MOONSHOT_API_KEY\" -H 'Content-Type: application/json' \\\n"
-        "  -d \"$(jq -Rs '{{model:\"kimi-k2-turbo-preview\",messages:[{{role:\"user\",content:.}}]}}' {packet})\"",
+        "  -d \"$(jq -Rs '{{model:\"'${{KIMI_MODEL:?set KIMI_MODEL}}'\",messages:[{{role:\"user\",content:.}}]}}' {packet})\"\n"
+        "# The kimi-k2 series was discontinued on 2026-05-25; take KIMI_MODEL from\n"
+        "# Kimi's current list (kimi-k3 as of 2026-09).",
     ),
     "generic": (
         "any OpenAI-compatible endpoint",

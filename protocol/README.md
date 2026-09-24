@@ -51,9 +51,29 @@ Agent(
 )
 ```
 
-A sub-agent starts with no conversation history by construction, so zero context
-costs nothing extra. Pick the model explicitly; ask the agent to state its own
-model id in its first line.
+A sub-agent starts with no conversation history by construction, but not with
+nothing: it still loads your `CLAUDE.md` files, any `AGENTS.md` loaded as project
+instructions, and a git-status snapshot. (A fork started with `/subtask` inherits
+the whole conversation; it is never the reviewer.) Pick the model explicitly; ask
+the agent to state its own model id in its first line.
+
+To withhold the project instructions as well, define the reviewer once as a
+project sub-agent (Claude Code 2.1.271 or later) and launch it from a directory
+that holds the packet alone:
+
+```markdown
+---
+name: blind-reviewer
+description: Reviews a sealed packet with no project context. Use only when handed a packet.
+tools: Read
+omitClaudeMd: true
+model: sonnet   # anything but the model that wrote the artifact
+---
+Review the packet you are given. You know nothing else about this project.
+```
+
+Saved as `.claude/agents/blind-reviewer.md`. `claude plugin validate` accepts a
+misspelled field name without a word, so copy `omitClaudeMd` exactly.
 
 ### Codex CLI
 
@@ -68,16 +88,23 @@ codex exec --skip-git-repo-check < packet.md
 ```bash
 curl -s https://api.deepseek.com/chat/completions \
   -H "Authorization: Bearer $DEEPSEEK_API_KEY" -H 'Content-Type: application/json' \
-  -d "$(jq -Rs '{model:"deepseek-reasoner",messages:[{role:"user",content:.}]}' packet.md)"
+  -d "$(jq -Rs '{model:"'${DEEPSEEK_MODEL:?set DEEPSEEK_MODEL}'",messages:[{role:"user",content:.}]}' packet.md)"
 ```
+
+Model names change: `deepseek-reasoner` is no longer in DeepSeek's model list.
+Set `DEEPSEEK_MODEL` from [the current one](https://api-docs.deepseek.com/quick_start/pricing)
+(`deepseek-v4-pro` as of 2026-09).
 
 ### Kimi / Moonshot
 
 ```bash
 curl -s https://api.moonshot.cn/v1/chat/completions \
   -H "Authorization: Bearer $MOONSHOT_API_KEY" -H 'Content-Type: application/json' \
-  -d "$(jq -Rs '{model:"kimi-k2-turbo-preview",messages:[{role:"user",content:.}]}' packet.md)"
+  -d "$(jq -Rs '{model:"'${KIMI_MODEL:?set KIMI_MODEL}'",messages:[{role:"user",content:.}]}' packet.md)"
 ```
+
+The `kimi-k2` series was discontinued on 2026-05-25. Set `KIMI_MODEL` from
+[the current list](https://platform.kimi.ai/docs/models.md) (`kimi-k3` as of 2026-09).
 
 ### Anything OpenAI-compatible
 
